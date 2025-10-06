@@ -1,0 +1,947 @@
+                <!DOCTYPE html>
+                <html lang="en" dir="ltr">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>PromptMate</title>
+                    
+                    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+                    <script src="https://unpkg.com/feather-icons"></script>
+                    
+                    <style>
+                    
+                        :root {
+                            --font-family: 'Roboto', sans-serif;
+                            --bg-body: #0a111e;
+                            --bg-panel: #1b263b;
+                            --bg-input-bar: #293241;
+                            --text-color: #e5e7eb;
+                            --color-primary: #58a6ff;
+                            --border-color: #3b4a62;
+                            --shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+                            --shadow-soft: 0 3px 10px rgba(0, 0, 0, 0.5);
+                            --danger-color: #ff5c7c; 
+                            --user-bubble-bg: #3b82f6; 
+                            --ai-bubble-bg: #293241;
+                            --hover-bg: #2d3e5a;
+                        }
+                        body.light-mode {
+                            --bg-body: #f3f4f6;
+                            --bg-panel: #ffffff;
+                            --bg-input-bar: #e5e7eb; 
+                            --text-color: #1f2937;
+                            --color-primary: #1059c9;
+                            --border-color: #d1d5db;
+                            --shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+                            --shadow-soft: 0 2px 5px rgba(0, 0, 0, 0.1);
+                            --danger-color: #dc2626;
+                            --user-bubble-bg: #3b82f6;
+                            --ai-bubble-bg: #f9fafb;
+                            --hover-bg: #e5e7eb;
+                        }
+
+                        body {
+                            background-color: var(--bg-body);
+                            color: var(--text-color);
+                            font-family: var(--font-family);
+                            margin: 0;
+                            display: flex;
+                            flex-direction: column;
+                            height: 100vh;
+                            transition: all 0.4s ease;
+                            direction: ltr;
+                            font-weight: 300;
+                        }
+                        
+                        .header {
+                            background-color: var(--bg-panel);
+                            padding: 15px 25px;
+                            border-bottom: 1px solid var(--border-color);
+                            box-shadow: var(--shadow-soft);
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between; 
+                        }
+                        
+                        .header-left { 
+                            display: flex;
+                            flex-direction: column;
+                            line-height: 1.2;
+                            padding-bottom: 5px; 
+                            text-align: left;
+                            order: 1; 
+                        }
+                        .logo {
+                            font-size: 28px;
+                            font-weight: 700;
+                            color: var(--color-primary);
+                        }
+                        .logo-description {
+                            font-size: 14px;
+                            opacity: 0.8;
+                            font-family: sans-serif;
+                        }
+                        
+                        .header-right { 
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            order: 2; 
+                        }
+                        .dropdown, .button {
+                            padding: 10px 15px; 
+                            border: none;
+                            border-radius: 10px; 
+                            background-color: var(--bg-input-bar); 
+                            color: var(--text-color);
+                            transition: all 0.2s ease-in-out; 
+                            box-shadow: var(--shadow-soft); 
+                            cursor: pointer;
+                            font-weight: 400;
+                        }
+                        .icon-button-small { 
+                            width: 40px; 
+                            height: 40px; 
+                            padding: 0;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            border-radius: 50%;
+                        }
+                        .icon-button-small i {
+                            width: 20px;
+                            height: 20px;
+                        }
+                        .primary-button {
+                            background-color: var(--color-primary);
+                            color: white;
+                            box-shadow: var(--shadow-soft);
+                        }
+                        .button.danger-active {
+                            background-color: var(--danger-color) !important;
+                            border-color: var(--danger-color) !important;
+                            transform: scale(0.98);
+                        }
+                        
+                        .main-content {
+                            flex-grow: 1;
+                            display: flex;
+                            padding: 20px;
+                            gap: 20px;
+                            overflow: hidden;
+                            direction: ltr; 
+                        }
+                        .sidebar-left { 
+                            width: 250px; 
+                            background-color: var(--bg-panel); 
+                            border-radius: 15px;
+                            box-shadow: var(--shadow);
+                            padding: 20px;
+                            flex-shrink: 0;
+                            display: flex; 
+                            flex-direction: column;
+                        }
+                        .sidebar-right { 
+                            width: 250px; 
+                            background-color: var(--bg-panel); 
+                            border-radius: 15px;
+                            box-shadow: var(--shadow);
+                            padding: 20px;
+                            flex-shrink: 0;
+                            text-align: center;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            border: 2px dashed var(--color-primary); 
+                            background-color: rgba(88, 166, 255, 0.1); 
+                        }
+                        .sidebar-controls {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 10px;
+                            margin-bottom: 20px; 
+                        }
+                        
+                        .ad-space { 
+                            flex-grow: 1; 
+                            padding: 20px;
+                            margin-top: 20px;
+                            border: 2px dashed var(--color-primary); 
+                            border-radius: 10px;
+                            color: var(--text-color);
+                            text-align: center;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            align-items: center;
+                            background-color: rgba(88, 166, 255, 0.1); 
+                            min-height: 150px;
+                        }
+                        .ad-space h4 {
+                            font-weight: 700;
+                            margin: 0 0 10px 0;
+                            color: var(--color-primary);
+                        }
+                        .ad-space p {
+                            margin: 0;
+                            opacity: 0.9;
+                        }
+                        
+                        .main-prompt-box {
+                            flex-grow: 1;
+                            display: flex;
+                            flex-direction: column;
+                            background-color: var(--bg-panel);
+                            border-radius: 15px;
+                            box-shadow: var(--shadow);
+                            overflow: hidden;
+                            direction: ltr; 
+                        }
+
+                        #chat-window {
+                            flex-grow: 1;
+                            padding: 20px;
+                            overflow-y: auto;
+                            display: flex;
+                            flex-direction: column;
+                            gap: 15px;
+                        }
+                        
+                        .chat-message {
+                            padding: 14px 20px;
+                            border-radius: 20px;
+                            max-width: 78%;
+                            line-height: 1.6;
+                            font-size: 16px;
+                            font-weight: 300;
+                            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+                            text-align: left; 
+                        }
+
+                        .user-message { 
+                            background-color: var(--user-bubble-bg);
+                            color: white;
+                            margin-left: auto; 
+                            margin-right: 0; 
+                            border-bottom-right-radius: 8px; 
+                        }
+                        
+                        .ai-message { 
+                            background-color: var(--ai-bubble-bg);
+                            color: var(--text-color);
+                            margin-right: auto;
+                            margin-left: 0; 
+                            border-bottom-left-radius: 8px; 
+                        }
+                        
+                        
+                        #thinkingMessage {
+                            font-size: 20px; 
+                            letter-spacing: 0px; 
+                            padding: 10px 20px; 
+                            text-align: left;
+                            color: var(--text-color);
+                            width: auto; 
+                            max-width: fit-content;
+                            display: flex; 
+                            align-items: center;
+                            gap: 10px;
+                        }
+                        
+                        .thinking-dot {
+                            opacity: 0;
+                            animation: dot-pulse 1.5s infinite;
+                            font-size: 24px;
+                            line-height: 1;
+                        }
+                        .thinking-dot:nth-child(1) { animation-delay: 0s; }
+                        .thinking-dot:nth-child(2) { animation-delay: 0.3s; }
+                        .thinking-dot:nth-child(3) { animation-delay: 0.6s; }
+
+                        @keyframes dot-pulse {
+                            0% { opacity: 0.4; transform: scale(1); }
+                            50% { opacity: 1; transform: scale(1.1); }
+                            100% { opacity: 0.4; transform: scale(1); }
+                        }
+                        
+                    
+                        .input-bar-container {
+                            padding: 15px 20px;
+                            background-color: var(--bg-panel);
+                            border-top: 1px solid var(--border-color);
+                        }
+                        .input-bar {
+                            display: flex;
+                            align-items: center;
+                            background-color: var(--bg-input-bar); 
+                            border-radius: 15px;
+                            padding: 8px; 
+                            box-shadow: var(--shadow-soft);
+                            flex-direction: row; 
+                        }
+                        
+                        .input-bar input {
+                            flex-grow: 1;
+                            border: none;
+                            background: transparent;
+                            color: var(--text-color);
+                            padding: 10px 15px;
+                            font-size: 16px;
+                            outline: none;
+                            text-align: left;
+                            direction: ltr;
+                            order: 1; 
+                        }
+                        
+                        .control-buttons {
+                            display: flex;
+                            align-items: center;
+                            gap: 10px;
+                            padding: 0 5px;
+                            flex-shrink: 0; 
+                            order: 2; 
+                        }
+                        
+                        .send-button {
+                            padding: 8px 15px;
+                            background-color: var(--color-primary);
+                            color: white;
+                            border-radius: 10px;
+                            cursor: pointer;
+                            font-weight: 700;
+                        }
+
+                        
+                        .mic-button-wrapper {
+                            width: 40px;
+                            height: 40px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background-color: var(--border-color);
+                            border-radius: 50%;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                        }
+                        .mic-button-wrapper.recording { 
+                            background-color: var(--danger-color);
+                            animation: pulse-red 1s infinite;
+                        }
+                        @keyframes pulse-red {
+                            0% { box-shadow: 0 0 0 0 rgba(255, 92, 124, 0.7); }
+                            70% { box-shadow: 0 0 0 10px rgba(255, 92, 124, 0); }
+                            100% { box-shadow: 0 0 0 0 rgba(255, 92, 124, 0); }
+                        }
+                        
+                        
+                @media (max-width: 768px) {
+                    
+                    body {
+                        height: auto !important; 
+                        min-height: 100vh !important;
+                        overflow-x: hidden !important; 
+                    }
+
+                    .main-content {
+                        display: block !important; 
+                        width: 100% !important;
+                        padding: 10px 5px !important; 
+                        gap: 0 !important; 
+                    }
+                    
+                    .sidebar-left, 
+                    .main-prompt-box, 
+                    .sidebar-right {
+                        display: block !important; 
+                        width: 100% !important; 
+                        margin: 10px 0 !important; 
+                        flex-shrink: 1 !important; 
+                        box-sizing: border-box !important; 
+                    }
+
+                    .sidebar-left {
+                        order: -1 !important; 
+                    }
+
+                    .sidebar-right {
+                        display: none !important;
+                    }
+
+                
+                    .header {
+                        flex-direction: column !important;
+                        align-items: center !important;
+                        padding: 10px 15px !important;
+                    }
+                    .header-right {
+                        width: 100% !important;
+                        justify-content: space-around !important;
+                        flex-wrap: wrap !important;
+                        gap: 5px !important;
+                        margin-top: 10px !important;
+                    }
+                    .header-right > * {
+                        flex-grow: 1 !important; 
+                        flex-basis: auto !important; 
+                    }
+                    
+                    
+                    .sidebar-controls {
+                        flex-direction: row !important; 
+                        justify-content: space-between !important;
+                    }
+                    .sidebar-controls .button {
+                        flex-grow: 1 !important;
+                        text-align: center !important;
+                    }
+                }
+                    </style>
+                </head>
+                <body onload="loadPageSettings()">
+                    <div class="header">
+                        
+                        <div class="header-left">
+                            <div class="logo">PromptMate</div>
+                            <div class="logo-description">Generate for any models </div>
+                        </div>
+                        
+                        <div class="header-right">
+                            <button class="button icon-button-small" id="modeToggle">
+                                <i data-feather="sun" class="icon-toggle"></i>
+                            </button>
+                            
+                            <select class="dropdown" id="qualitySelect">
+                                <option value="Low">Low</option>
+                                <option value="Mid" selected>Mid</option>
+                                <option value="High">High</option>
+                            </select>
+
+                            <select class="dropdown" id="modelSelect">          
+                                <option value="DALL·E ">DALL·E </option>
+                                <option value="Stable Diffusion">Stable Diffusion</option>
+                                <option value="Midjourney">Midjourney</option>
+                                <option value="Adobe Firefly">Adobe Firefly</option>
+                                <option value="Ideogram">Ideogram</option>
+                                <option value="GPT">GPT</option>
+                                <option value="Playform">Playform</option>
+                                <option value="Seedream">SeedReam</option>
+                                <option value="Flux">Flux</option>
+                                <option value="Runway ML">Runway ML</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="main-content">
+                        
+                        <div class="sidebar-left">
+                            
+                            <div class="sidebar-controls">
+                                <button class="button primary-button" id="newChatButton">
+                                    <i data-feather="plus" style="width: 18px; height: 18px;"></i>
+                                    <span class="chat-control-text en-text">New Chat</span>
+                                </button>
+
+                                <button class="button" id="clearChatButtonSidebar">
+                                    <i data-feather="trash-2" style="width: 18px; height: 18px;"></i>
+                                    <span class="chat-control-text en-text">Clear Chat</span>
+                                </button>
+                            </div>
+
+                            <div class="archive-section">
+                            
+                                    <li class="en-text">No saved chats</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="ad-space">
+                                
+                            </div>
+                        </div>
+                        
+                        <div class="main-prompt-box">
+                            <div id="chat-window">
+                                <div class="chat-message ai-message" id="initialMessage">
+                                    👋 Hello! What is on your mind that you want to generate ?
+                                </div>
+                            </div>
+                            
+                            <div class="input-bar-container">
+                                <div class="input-bar">
+                                    
+                                    <input type="text" id="promptInput" placeholder="black cat walking ...">
+                                    
+                                    <div class="control-buttons">
+                                        <div class="mic-button-wrapper" id="micButtonWrapper">
+                                            <i data-feather="mic" class="icon-button" id="micButton"></i> 
+                                        </div>
+                                        <span class="send-button" id="sendTextButton">Send</span> 
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-right">
+                            
+                        </div>
+                        
+                    </div>
+                <script>
+                    feather.replace();
+
+                    const CHAT_STORAGE_KEY = 'promptMateActiveChat'; 
+                    const ARCHIVE_STORAGE_KEY = 'promptMateArchive'; 
+                    const QUALITY_STORAGE_KEY = 'promptMateQuality';
+                    const MODEL_STORAGE_KEY = 'promptMateModel';
+
+                    const body = document.body;
+                    const promptInput = document.getElementById('promptInput');
+                    const sendTextButton = document.getElementById('sendTextButton');
+                    const chatWindow = document.getElementById('chat-window');
+                    const micButtonWrapper = document.getElementById('micButtonWrapper');
+                    const modeToggle = document.getElementById('modeToggle');
+                    const newChatButton = document.getElementById('newChatButton');
+                    const clearChatButtonSidebar = document.getElementById('clearChatButtonSidebar');
+                    const archiveList = document.getElementById('archiveList');
+                    const qualitySelect = document.getElementById('qualitySelect');
+                    const modelSelect = document.getElementById('modelSelect');
+                    
+                    
+                    const AI_API_KEY = "AIzaSyAHd1AOEAveGY-u7tiaGjGVUk9e6rxVLyE"; 
+                    
+                    const translations = {
+                        en: {
+                            send: "Send",
+                            placeholder: "black cat walking ...",
+                            initial_ai_message: " 👋 Hello! What is on your mind that you want to generate ?",
+                            conn_fail: "❌ Connection Failed.",
+                            archive_delete_success: "✅ Last saved chat deleted from archive.",
+                            thinking_message: "Processing and thinking... ⏳", 
+                            no_saved_chats: "No saved chats",
+                            image_task: " (Image Prompt Task)",
+                            text_task: " (Text Task)",
+                            empty_input: "Please enter a request first.", 
+                            
+                            system_prompt: (quality, model) => {
+                            
+                                const imageModels = ['DALL·E ', 'Stable Diffusion', 'Midjourney', 'Adobe Firefly', 'Ideogram', 'GPT ', 'Playform', 'Seedream', 'Flux', 'Runway ML'];
+                                const isImageModel = imageModels.includes(model);
+                                
+                                let promptInstructions = `You are a professional, highly efficient AI assistant.
+                                The user wants a response tailored to a **${quality}** quality output using the **${model}** platform.
+                                
+                                **Instructions for response:**
+                                1. **Accuracy:** Use only verifiable facts or information from the prompt context.
+                                2. **Clarity (Clean Output):** Format the response using Markdown (bold, headings, lists) for maximum readability.
+                                3. **Conciseness (Faster Output):** Get straight to the point. Eliminate filler words and lengthy introductions/conclusions.
+                                4. **Language Policy:** **RESPOND ONLY in the language used by the user in their latest prompt.**
+                                5. **Content Policy:** For ALL requests, **NEVER** respond with basic facts, dictionary definitions, or informational summaries. If the request is not for image generation, respond with a creative, professional, or strategic textual output.`;
+
+                                if (isImageModel) {
+                                    promptInstructions += `\n\n**ULTRA SPECIAL INSTRUCTION: IMAGE PROMPT GENERATION MODE ACTIVE**
+                                    The selected platform is an image generator (${model}). **Your ONLY output must be the optimized text prompt itself.**
+                                    
+                                    **A. Format Rules:**
+                                    - **Avoid all chatty text, explanations, or greetings.** Deliver the prompt immediately.
+                                    ${model === 'Midjourney' ? `- **Start with "/imagine prompt:**\n` : ''}
+
+                                    **B. Quality & Style Integration:**
+                                    - **If Quality is 'High':** Generate a dense, highly detailed, cinematic prompt. Use technical terms like 'photorealism,' 'octane render,' '8K,' 'Ray Tracing,' 'cinematic lighting,' and a specific camera lens (e.g., 'shot on Arri Alexa').
+                                    - **If Quality is 'Low' or 'Mid':** Generate a more direct, simpler prompt, focusing only on the main subject and style.
+                                    
+                                    **C. Content Requirement:**
+                                    - **The generated prompt MUST contain:** Subject, Environment/Setting, Action/Mood, Lighting, Art Style, and Quality Keywords.
+
+                                    // ** 🚨 قواعد البارامترات الخاصة لكل منصة 🚨 **
+                                    **D. Platform Specific Parameters:** Based on the selected model, you MUST append the following specialized parameters or keywords to the end of the prompt:
+                                    
+                                    // --- الفئة 1: النماذج الاحترافية ---
+                                    - **If Model is 'Midjourney':** Append necessary stylistic parameters. Example: \` --ar 16:9 --s 750 --v 6.0 --style raw\`
+                                    - **If Model is 'Stable Diffusion':** Append quality tokens, artist names, and detail modifiers. Example: \`, masterpiece, best quality, detailed, by greg rutkowski, (high resolution:1.2), cinematic lighting\`
+                                    - **If Model is 'DALL·E (OpenAI)':** Append style descriptors that focus on realism and resolution. Example: \`, hyper-detailed, photorealistic digital painting, volumetric lighting\`
+                                    - **If Model is 'Leonardo AI':** Append high-quality style tags. Example: \`, octane render, photorealism, high contrast, cinematic atmosphere, aspect_ratio=16:9\`
+                                    - **If Model is 'Runway ML':** (Primarily Video, but for image prompts) Focus on dynamic and cinematic motion cues. Example: \`, cinematic frame, high dynamism, smooth camera movement, color grading\`
+                                    - **If Model is 'Adobe Firefly':** Focus on Adobe's style preferences (clean, vector, or high-end photography). Example: \`, vector art style, clean lines, high-end commercial photography, generated with Adobe Firefly\`
+                                    
+                                    // --- الفئة 2: النماذج المتخصصة (الأنمي/السرعة) ---
+                                    - **If Model is 'NovelAI':** Append specific anime/manga tags and quality tokens. Example: \`, animesketch, highly detailed, expressive eyes, official art, (masterpiece:1.3)\`
+                                    - **If Model is 'Lensa':** Append portrait and avatar focused tags. Example: \`, professional portrait, studio lighting, dramatic shadow, high resolution avatar\`
+                                    - **If Model is 'ImagineArt (Vyro.ai)' or 'Playform’s Freeform Diffusion':** Append tags emphasizing unique art styles and abstract concepts. Example: \`, abstract expressionism, deep focus, unique color palette, generated by AI art platform\`
+                                    
+                                    // --- نهاية التوجيهات ---
+                                    `;
+                                }
+                                
+                                promptInstructions += `\n\nBegin your answer immediately after this context.`;
+                                return promptInstructions;
+                            }
+                        }
+                    };
+
+                    
+                    const AI_TEMPERATURE = 0.7; 
+                    const AI_MAX_TOKENS = 2000; 
+
+                    let currentLang = 'en'; 
+                    let isMicActive = false;
+                    let isLightMode = false;
+                    let currentQuality = 'Mid'; 
+                    let currentModel = 'Midjourney'; 
+                    let recognition; 
+                    
+                    function getTranslation(key) {
+                        return translations['en'][key];
+                    }
+
+                    function saveSettings() {
+                        localStorage.setItem(QUALITY_STORAGE_KEY, qualitySelect.value);
+                        localStorage.setItem(MODEL_STORAGE_KEY, modelSelect.value);
+                        currentQuality = qualitySelect.value;
+                        currentModel = modelSelect.value;
+                        console.log(`Settings Saved: Quality=${currentQuality}, Model=${currentModel}`);
+                        updateInitialMessage(); 
+                    }
+
+                    function loadSettings() {
+                        const savedQuality = localStorage.getItem(QUALITY_STORAGE_KEY);
+                        const savedModel = localStorage.getItem(MODEL_STORAGE_KEY);
+                        
+                        const allModels = ['DALL·E ', 'Stable Diffusion', 'Midjourney', 'Adobe Firefly', 'Ideogram', 'GPT ', 'Playform', 'Seedream', 'Flux', 'Runway ML'];
+
+                        if (savedQuality) {
+                            qualitySelect.value = savedQuality;
+                            currentQuality = savedQuality;
+                        }
+                        if (savedModel && allModels.includes(savedModel)) {
+                            modelSelect.value = savedModel;
+                            currentModel = savedModel;
+                        } else {
+                            
+                            currentModel = 'Gemini-Flash'; 
+                            modelSelect.value = currentModel;
+                        }
+                        updateInitialMessage();
+                    }
+                    
+                        function updateInitialMessage() {
+                        
+                        const initialMessage = document.getElementById('initialMessage');
+                        if (initialMessage) {
+                        
+                            initialMessage.innerHTML = getTranslation('initial_ai_message'); 
+                        }
+                        promptInput.placeholder = getTranslation('placeholder');
+                        sendTextButton.innerHTML = getTranslation('send');
+                    }
+                
+
+                    qualitySelect.addEventListener('change', saveSettings);
+                    modelSelect.addEventListener('change', saveSettings);
+
+                    function loadPageSettings() {
+                        document.documentElement.lang = currentLang;
+                        document.documentElement.dir = 'ltr';
+                        body.setAttribute('lang', currentLang);
+                        
+                        loadActiveChat();
+                        renderArchiveList();
+                        loadSettings(); 
+
+                        const savedMode = localStorage.getItem('isLightMode');
+                        if (savedMode === 'true') {
+                            isLightMode = true;
+                            toggleMode(false); 
+                        }
+                        
+                        chatWindow.scrollTop = chatWindow.scrollHeight; 
+                    }
+
+                    function loadActiveChat() {
+                        const savedChat = localStorage.getItem(CHAT_STORAGE_KEY);
+                        if (savedChat) {
+                            chatWindow.innerHTML = savedChat;
+                        } else {
+                            const defaultMessageHtml = `<div class="chat-message ai-message" id="initialMessage">${getTranslation('initial_ai_message')}</div>`;
+                            chatWindow.innerHTML = defaultMessageHtml;
+                        }
+                    }
+                    
+                    function addMessage(text, sender) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.classList.add('chat-message');
+                        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'ai-message');
+                        messageDiv.innerHTML = text;
+                        chatWindow.appendChild(messageDiv);
+                        chatWindow.scrollTop = chatWindow.scrollHeight; 
+
+                        const initialMessage = document.getElementById('initialMessage');
+                        if (sender === 'user' && initialMessage) {
+                            initialMessage.style.display = 'none';
+                        }
+                        
+                        saveActiveChat();
+                    }
+                    
+                    function addThinkingMessage() {
+                        const thinkingMessage = document.createElement('div');
+                        thinkingMessage.classList.add('chat-message', 'ai-message');
+                        thinkingMessage.id = 'thinkingMessage';
+                        
+                        thinkingMessage.innerHTML = `
+                            ${getTranslation('thinking_message')}
+                            <span class="thinking-dot">.</span>
+                            <span class="thinking-dot">.</span>
+                            <span class="thinking-dot">.</span>
+                        `;
+
+                        chatWindow.appendChild(thinkingMessage);
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                        sendTextButton.disabled = true; 
+                        promptInput.disabled = true;
+                    }
+
+                    function removeThinkingMessage() {
+                        const thinkingMessage = document.getElementById('thinkingMessage');
+                        if (thinkingMessage) {
+                            chatWindow.removeChild(thinkingMessage);
+                        }
+                        sendTextButton.disabled = false;
+                        promptInput.disabled = false;
+                        promptInput.focus();
+                    }
+
+                    async function handleSend() {
+                        let prompt = promptInput.value.trim();
+                        
+                        if (prompt === "") {
+                            addMessage(getTranslation('empty_input'), 'ai');
+                            return;
+                        }
+
+                        const systemPrompt = translations['en'].system_prompt(currentQuality, currentModel);
+                        const fullPrompt = `${systemPrompt}\n\nUser Request: ${prompt}`;
+
+                        addMessage(prompt, 'user');
+                        promptInput.value = '';
+                        
+                        addThinkingMessage();
+
+                        if (AI_API_KEY.length < 10) {
+                            removeThinkingMessage();
+                            addMessage(getTranslation('conn_fail'), 'ai');
+                            addMessage(`Request accepted. Unable to proceed without a valid API Key.`, 'ai');
+                            return; 
+                        }
+                        
+                        const geminiModel = 'gemini-2.5-flash'; 
+                        const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${AI_API_KEY}`;
+                        
+                        try {
+                            const response = await fetch(GEMINI_API_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    contents: [{
+                                        parts: [{
+                                            text: fullPrompt 
+                                        }]
+                                    }],
+                                    generationConfig: {
+                                        temperature: AI_TEMPERATURE,
+                                        maxOutputTokens: AI_MAX_TOKENS,
+                                    }
+                                })
+                            });
+
+                            if (!response.ok) {
+                                const errorData = await response.json();
+                                let errorMessage = errorData.error && errorData.error.message ? errorData.error.message : response.statusText;
+                                throw new Error(errorMessage);
+                            }
+
+                            const data = await response.json();
+                            
+                            let aiResponseText = '';
+                            if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts.length > 0) {
+                                aiResponseText = data.candidates[0].content.parts[0].text;
+                            } else {
+                                throw new Error('Received an empty or malformed response from Gemini.');
+                            }
+
+                            removeThinkingMessage();
+                            addMessage(aiResponseText, 'ai');
+
+                        } catch (error) {
+                            removeThinkingMessage();
+                            const errorMsg = `❌  error : ${error.message}`;
+                            addMessage(errorMsg, 'ai');
+                            console.error('', error);
+                        }
+                    }
+                    
+                    
+                    function getArchive() {
+                        try {
+                            const archive = localStorage.getItem(ARCHIVE_STORAGE_KEY);
+                            return archive ? JSON.parse(archive) : [];
+                        } catch (e) {
+                            console.error("Error loading archive:", e);
+                            return [];
+                        }
+                    }
+                    function saveArchive(archive) {
+                        localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(archive));
+                    }
+                    function saveActiveChat(name) {
+                        const messages = Array.from(chatWindow.children)
+                            .filter(el => el.id !== 'initialMessage' && el.id !== 'thinkingMessage')
+                            .map(el => el.outerHTML);
+                        if (messages.length === 0) return;
+                        const newChat = {
+                            id: Date.now(),
+                            name: name || messages[0].replace(/<[^>]*>/g, '').substring(0, 30) + (messages[0].replace(/<[^>]*>/g, '').length > 30 ? '...' : ''),
+                            html: chatWindow.innerHTML 
+                        };
+                        localStorage.setItem(CHAT_STORAGE_KEY, newChat.html);
+                        return newChat;
+                    }
+                    function storeChatInArchive(chatName) {
+                        const chatToArchive = saveActiveChat(chatName);
+                        if (!chatToArchive) return;
+                        let archive = getArchive();
+                        archive = archive.filter(chat => chat.id !== chatToArchive.id);
+                        archive.unshift(chatToArchive);
+                        saveArchive(archive);
+                        renderArchiveList();
+                    }
+                    function renderArchiveList() {
+                    
+                        const archiveSection = document.querySelector('.archive-section');
+                        if (!archiveSection) return; 
+
+                        
+                        let ul = archiveSection.querySelector('ul');
+                        if (!ul) {
+                            ul = document.createElement('ul');
+                            ul.id = 'archiveList'; 
+                            archiveSection.innerHTML = ''; 
+                            archiveSection.appendChild(ul);
+                        }
+                        
+                        ul.innerHTML = ''; 
+                        const archive = getArchive();
+
+                        if (archive.length === 0) {
+                            const emptyMsg = document.createElement('li');
+                            emptyMsg.textContent = getTranslation('no_saved_chats'); 
+                            ul.appendChild(emptyMsg);
+                            return;
+                        }
+                        archive.forEach(chat => {
+                            const li = document.createElement('li');
+                            li.textContent = chat.name;
+                            li.setAttribute('data-chat-id', chat.id);
+                            li.onclick = () => loadArchivedChat(chat.id);
+                            ul.appendChild(li);
+                        });
+                    }
+
+                    function loadArchivedChat(chatId) {
+                        const archive = getArchive();
+                        const chat = archive.find(c => c.id == chatId);
+                        if (chat) {
+                            storeChatInArchive(); 
+                            chatWindow.innerHTML = chat.html;
+                            localStorage.setItem(CHAT_STORAGE_KEY, chat.html);
+                            chatWindow.scrollTop = chatWindow.scrollHeight;
+                        }
+                    }
+                    function toggleMode(save = true) {
+                        isLightMode = !isLightMode;
+                        body.classList.toggle('light-mode', isLightMode);
+                        const icon = modeToggle.querySelector('.icon-toggle');
+                        if (isLightMode) {
+                            icon.setAttribute('data-feather', 'moon');
+                        } else {
+                            icon.setAttribute('data-feather', 'sun');
+                        }
+                        feather.replace();
+                        if (save) {
+                            localStorage.setItem('isLightMode', isLightMode);
+                        }
+                    }
+                    function toggleMic() {
+                        
+                    }
+                    micButtonWrapper.addEventListener('click', () => {
+                        
+                        console.log("Mic button clicked (Functionality is simulated in this environment)");
+                        micButtonWrapper.classList.toggle('recording');
+                        setTimeout(() => micButtonWrapper.classList.remove('recording'), 1000);
+                    });
+                    newChatButton.addEventListener('click', () => {
+                        storeChatInArchive(); 
+                        chatWindow.innerHTML = '';
+                        const defaultMessageHtml = `<div class="chat-message ai-message" id="initialMessage">${getTranslation('initial_ai_message')}</div>`;
+                        chatWindow.innerHTML = defaultMessageHtml;
+                        loadSettings(); 
+                        localStorage.removeItem(CHAT_STORAGE_KEY);
+                        promptInput.value = '';
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
+                        newChatButton.classList.add('danger-active');
+                        setTimeout(() => newChatButton.classList.remove('danger-active'), 500);
+                    });
+                    clearChatButtonSidebar.addEventListener('click', () => {
+                        clearChatButtonSidebar.classList.add('danger-active');
+                        setTimeout(() => clearChatButtonSidebar.classList.remove('danger-active'), 500);
+                        const messages = Array.from(chatWindow.children).filter(el => el.id !== 'initialMessage' && el.id !== 'thinkingMessage');
+                        if (messages.length > 0) {
+                            localStorage.removeItem(CHAT_STORAGE_KEY);
+                            
+                            while (chatWindow.children.length > 1) {
+                                chatWindow.removeChild(chatWindow.lastChild);
+                            }
+                            const initialMessage = document.getElementById('initialMessage');
+                            if (initialMessage) {
+                                initialMessage.style.display = 'block';
+                                updateInitialMessage(); 
+                            }
+                        } else {
+                            let archive = getArchive();
+                            if (archive.length > 0) {
+                                archive.shift(); 
+                                saveArchive(archive);
+                                renderArchiveList();
+                                
+                                const archiveSection = document.querySelector('.archive-section ul') || document.querySelector('.archive-section');
+                                const deleteMsg = document.createElement('li');
+                                deleteMsg.textContent = getTranslation('archive_delete_success');
+                                deleteMsg.style.color = 'var(--danger-color)';
+                                if (archiveSection.tagName === 'UL') {
+                                    archiveSection.prepend(deleteMsg);
+                                } else {
+                                    archiveSection.insertBefore(deleteMsg, archiveSection.firstChild);
+                                }
+                                setTimeout(() => {
+                                    if (archiveSection.contains(deleteMsg)) {
+                                        archiveSection.removeChild(deleteMsg);
+                                    }
+                                }, 2000); 
+                            }
+                        }
+                    });
+                    modeToggle.addEventListener('click', toggleMode);
+                    sendTextButton.addEventListener('click', handleSend);
+                    promptInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) { 
+                            e.preventDefault(); 
+                            handleSend();
+                        }
+                    });
+                    
+                    loadPageSettings();
+                </script></body>
+                </html>
